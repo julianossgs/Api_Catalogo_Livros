@@ -1,0 +1,6 @@
+@Api_Catalogo_Livros_HostAddress = http://localhost:5099
+
+GET {{Api_Catalogo_Livros_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
