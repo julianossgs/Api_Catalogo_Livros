@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Api_Catalogo_Livros.Models
 {
@@ -24,8 +25,13 @@ namespace Api_Catalogo_Livros.Models
         public string Ano_Publicacao { get; set; }
 
         public int AutorId { get; set; }//fk
+
+        [JsonIgnore]
         public Autores Autores { get; set; }
+
         public int EditoraId { get; set; }//fk
+
+        [JsonIgnore]
         public Editoras Editoras { get; set; }
     }
 }
