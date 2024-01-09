@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Api_Catalogo_Livros.Validation;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,6 +21,7 @@ namespace Api_Catalogo_Livros.Models
         [Required(ErrorMessage = "Campo obrigatório!")]
         [Display(Name = "Nome da Editora")]
         [StringLength(60, MinimumLength = 2, ErrorMessage = "Máximo de 60 caracteres")]
+        [UpperCase]
         public string Nome { get; set; }
 
         [Required]
