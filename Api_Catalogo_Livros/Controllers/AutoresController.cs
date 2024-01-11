@@ -22,8 +22,8 @@ namespace Api_Catalogo_Livros.Controllers
             try
             {
                 return await _context.Autores.Include(p => p.Livros)
-               .Where(p => p.AutorId <= 10)
-               .AsNoTracking().ToListAsync();
+                           .Where(p => p.AutorId <= 5)
+                           .AsNoTracking().ToListAsync();
             }
             catch (Exception)
             {
@@ -42,7 +42,7 @@ namespace Api_Catalogo_Livros.Controllers
             try
             {
 
-                var autores = await _context.Autores.Take(2).AsNoTracking().ToListAsync();
+                var autores = await _context.Autores.Take(5).AsNoTracking().ToListAsync();
 
                 if (autores is null)
                 {

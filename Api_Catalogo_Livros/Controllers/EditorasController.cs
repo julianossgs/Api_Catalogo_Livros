@@ -22,7 +22,7 @@ namespace Api_Catalogo_Livros.Controllers
             try
             {
                 return await _context.Editoras.Include(p => p.Livros)
-                .Where(p => p.EditoraId <= 10)
+                .Where(p => p.EditoraId <= 5)
                 .AsNoTracking().ToListAsync();
             }
             catch (Exception)
@@ -40,7 +40,7 @@ namespace Api_Catalogo_Livros.Controllers
         {
             try
             {
-                var editoras = await _context.Editoras.Take(2).AsNoTracking().ToListAsync();
+                var editoras = await _context.Editoras.Take(5).AsNoTracking().ToListAsync();
 
                 if (editoras is null)
                 {
