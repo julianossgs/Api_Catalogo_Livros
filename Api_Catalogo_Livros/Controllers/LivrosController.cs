@@ -40,9 +40,9 @@ namespace Api_Catalogo_Livros.Controllers
         {
             try
             {
-                return await _context.Livros.Include(p => p.Editoras).
-              Where(p => p.LivroId <= 10)
-              .AsNoTracking().ToListAsync();
+                return await _context.Livros.Include(p => p.Editoras)
+                          .Where(p => p.LivroId <= 10)
+                          .AsNoTracking().ToListAsync();
             }
             catch (Exception)
             {
@@ -60,7 +60,7 @@ namespace Api_Catalogo_Livros.Controllers
         {
             try
             {
-                var livros = await _context.Livros.Take(2).AsNoTracking().ToListAsync();
+                var livros = await _context.Livros.Take(5).AsNoTracking().ToListAsync();
 
                 if (livros is null)
                 {

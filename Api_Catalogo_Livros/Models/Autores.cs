@@ -1,5 +1,6 @@
 ﻿using Api_Catalogo_Livros.Validation;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,7 +12,7 @@ namespace Api_Catalogo_Livros.Models
     {
         public Autores()
         {
-            Livros = new List<Livros>();
+            Livros = new Collection<Livros>();
         }
 
         [Key]
