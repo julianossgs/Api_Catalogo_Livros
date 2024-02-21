@@ -1,6 +1,8 @@
 using Api_Catalogo_Livros.Context;
 using Api_Catalogo_Livros.Filters;
 using Api_Catalogo_Livros.Logging;
+using Api_Catalogo_Livros.Repositories;
+using Api_Catalogo_Livros.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -22,6 +24,11 @@ builder.Services.AddDbContext<AppDbContext>(
 builder.Services.AddControllers().AddJsonOptions(
     options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
 );
+
+//habilitando os serviços do Repository
+builder.Services.AddScoped<IAutoresRepository, AutoresRepository>();
+builder.Services.AddScoped<IEditorasRepository, EditorasRepository>();
+builder.Services.AddScoped<ILivrosRepository, LivrosRepository>();
 
 //habilitando o serviço de log
 builder.Services.AddScoped<ApiLogginFilter>();

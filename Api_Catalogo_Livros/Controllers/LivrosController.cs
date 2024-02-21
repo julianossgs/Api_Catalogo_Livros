@@ -16,13 +16,14 @@ namespace Api_Catalogo_Livros.Controllers
             _context = context;
         }
 
-        [HttpGet("autores")]
+        [HttpGet("autores/editoras")]
         public async Task<ActionResult<IEnumerable<Livros>>> GetAutoresLivrosAsync()
         {
             try
             {
                 return await _context.Livros.Include(p => p.Autores)
-                    .Where(c => c.AutorId <= 10)
+                    .Include(p => p.Editoras)
+                    .Where(c => c.LivroId <= 10)
                     .AsNoTracking().ToListAsync();
             }
             catch (Exception)
@@ -35,24 +36,6 @@ namespace Api_Catalogo_Livros.Controllers
 
         }
 
-        [HttpGet("editoras")]
-        public async Task<ActionResult<IEnumerable<Livros>>> GetEditorasLivrosAsync()
-        {
-            try
-            {
-                return await _context.Livros.Include(p => p.Editoras)
-                          .Where(p => p.LivroId <= 10)
-                          .AsNoTracking().ToListAsync();
-            }
-            catch (Exception)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Ocorreu um problema!!! " +
-                    "Entre em contato com Suporte técnico (35)98898-1198");
-            }
-
-        }
 
         //método que retorna 1 lista 
         [HttpGet]

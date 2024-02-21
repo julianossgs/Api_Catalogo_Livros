@@ -16,13 +16,14 @@ namespace Api_Catalogo_Livros.Controllers
             _context = context;
         }
 
+        //Método que retorna Autores e seus livros
         [HttpGet("livros")]
         public async Task<ActionResult<IEnumerable<Autores>>> GetAutoresLivrosAsync()
         {
             try
             {
                 return await _context.Autores.Include(p => p.Livros)
-                           .Where(p => p.AutorId <= 5)
+                           .Where(p => p.AutorId <= 10)
                            .AsNoTracking().ToListAsync();
             }
             catch (Exception)
@@ -42,7 +43,8 @@ namespace Api_Catalogo_Livros.Controllers
             try
             {
 
-                var autores = await _context.Autores.Take(5).AsNoTracking().ToListAsync();
+                var autores = await _context.Autores
+                    .Take(10).AsNoTracking().ToListAsync();
 
                 if (autores is null)
                 {
@@ -66,8 +68,11 @@ namespace Api_Catalogo_Livros.Controllers
         {
             try
             {
-                var autor = await _context.Autores.AsNoTracking()
+                var autor = await _context.Autores
+                    .Include(c => c.Livros)
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(p => p.AutorId == id);
+
                 if (autor is null)
                 {
                     return NotFound("Autor não encontrado!");
