@@ -4,6 +4,7 @@ using Api_Catalogo_Livros.Logging;
 using Api_Catalogo_Livros.Repositories;
 using Api_Catalogo_Livros.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,33 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+
+        Version = "v1",
+        Title = "ApiCatalogoLivros",
+        Description = "Catálogo de Livros",
+        TermsOfService = new Uri("https://julianossgs.github.io"),
+        Contact = new Microsoft.OpenApi.Models.OpenApiContact
+        {
+            Name = "JP Sistemas",
+            Email = "julianosgs@yahoo.com.br",
+            Url = new Uri("https://julianossgs.github.io")
+        },
+        License = new Microsoft.OpenApi.Models.OpenApiLicense
+        {
+            Name = "License",
+            Url = new Uri("https://julianossgs.github.io")
+        }
+    });
+
+    {
+        var xmlFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFileName));
+    }
+});
 
 //habilitando o serviço de banco de dados(Banco de dados = APILivrariaDB)
 builder.Services.AddDbContext<AppDbContext>(

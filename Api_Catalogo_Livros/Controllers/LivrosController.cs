@@ -7,6 +7,8 @@ namespace Api_Catalogo_Livros.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class LivrosController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -16,7 +18,14 @@ namespace Api_Catalogo_Livros.Controllers
             _context = context;
         }
 
+
+        /// <summary>
+        /// Obter os autores e seus livros
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("autores/editoras")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Livros>>> GetAutoresLivrosAsync()
         {
 
@@ -29,7 +38,13 @@ namespace Api_Catalogo_Livros.Controllers
 
 
         //método que retorna 1 lista 
+        /// <summary>
+        /// Obter 1 lista
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<Livros>>> GetAsync()
         {
 
@@ -39,13 +54,20 @@ namespace Api_Catalogo_Livros.Controllers
             {
                 return NotFound("Lista não encontrada!");
             }
-            return livros;
+            return Ok(livros);
 
         }
 
 
         //método que retorna livro por id
+        /// <summary>
+        /// Obter 1 registro por ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "ObterLivro")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Livros> Get(int id)
         {
 
@@ -54,12 +76,22 @@ namespace Api_Catalogo_Livros.Controllers
             {
                 return NotFound("Livro não encontrado!");
             }
-            return livro;
+            return Ok(livro);
 
         }
 
         //add Post
+        /// <summary>
+        /// Adiciona 1 novo registro
+        /// </summary>
+        /// <param name="livro"></param>
+        /// <returns></returns>
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public ActionResult Add(Livros livro)
         {
 
@@ -76,7 +108,17 @@ namespace Api_Catalogo_Livros.Controllers
         }
 
         //update
+        /// <summary>
+        /// Atualiza 1 novo registro
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="livro"></param>
+        /// <returns></returns>
         [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesDefaultResponseType]
         public ActionResult Edit(int id, Livros livro)
         {
 
@@ -92,7 +134,14 @@ namespace Api_Catalogo_Livros.Controllers
         }
 
         //delete/excluir
+        /// <summary>
+        /// Exclui 1 registro
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult Delete(int id)
         {
 
