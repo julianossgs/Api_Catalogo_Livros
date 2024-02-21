@@ -20,23 +20,15 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Editoras>>> GetAsync()
         {
-            try
-            {
-                var editoras = await _context.Editoras
-                    .Take(5).AsNoTracking().ToListAsync();
 
-                if (editoras is null)
-                {
-                    return NotFound("Lista não encontrada!");
-                }
-                return editoras;
-            }
-            catch (Exception)
+            var editoras = await _context.Editoras
+                .Take(5).AsNoTracking().ToListAsync();
+
+            if (editoras is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                   "Ocorreu um problema!!! " +
-                                   "Entre em contato com Suporte técnico (35)98898-1198");
+                return NotFound("Lista não encontrada!");
             }
+            return editoras;
 
         }
 
@@ -45,22 +37,14 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet("{id:int}", Name = "ObterEditora")]
         public async Task<ActionResult<Editoras>> GetAsync(int id)
         {
-            try
+
+            var editora = await _context.Editoras.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.EditoraId == id);
+            if (editora is null)
             {
-                var editora = await _context.Editoras.AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.EditoraId == id);
-                if (editora is null)
-                {
-                    return NotFound("Editora não encontrada!");
-                }
-                return editora;
+                return NotFound("Editora não encontrada!");
             }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Ocorreu um problema!!! " +
-                   "Entre em contato com Suporte técnico (35)98898-1198");
-            }
+            return editora;
 
         }
 
@@ -68,24 +52,16 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpPost]
         public ActionResult Add(Editoras editora)
         {
-            try
-            {
-                if (editora is null)
-                {
-                    return BadRequest();
-                }
-                _context.Editoras.Add(editora);
-                _context.SaveChanges();
 
-                return new CreatedAtRouteResult("ObterEditora",
-                    new { id = editora.EditoraId }, editora);
-            }
-            catch (Exception)
+            if (editora is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                   "Ocorreu um problema!!! " +
-                                   "Entre em contato com Suporte técnico (35)98898-1198");
+                return BadRequest();
             }
+            _context.Editoras.Add(editora);
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("ObterEditora",
+                new { id = editora.EditoraId }, editora);
 
         }
 
@@ -93,23 +69,15 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpPut("{id:int}")]
         public ActionResult Edit(int id, Editoras editora)
         {
-            try
-            {
-                if (id != editora.EditoraId)
-                {
-                    return BadRequest("Editora não encontrada!");
-                }
 
-                _context.Entry(editora).State = EntityState.Modified;
-                _context.SaveChanges();
-                return Ok(editora);
-            }
-            catch (Exception)
+            if (id != editora.EditoraId)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                   "Ocorreu um problema!!! " +
-                                   "Entre em contato com Suporte técnico (35)98898-1198");
+                return BadRequest("Editora não encontrada!");
             }
+
+            _context.Entry(editora).State = EntityState.Modified;
+            _context.SaveChanges();
+            return Ok(editora);
 
         }
 
@@ -117,25 +85,17 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            try
-            {
-                var editora = _context.Editoras.FirstOrDefault(p => p.EditoraId == id);
-                if (editora is null)
-                {
-                    return NotFound("Editora não encontrada!");
-                }
 
-                _context.Editoras.Remove(editora);
-                _context.SaveChanges();
-
-                return Ok(editora);
-            }
-            catch (Exception)
+            var editora = _context.Editoras.FirstOrDefault(p => p.EditoraId == id);
+            if (editora is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Ocorreu um problema!!! " +
-                   "Entre em contato com Suporte técnico (35)98898-1198");
+                return NotFound("Editora não encontrada!");
             }
+
+            _context.Editoras.Remove(editora);
+            _context.SaveChanges();
+
+            return Ok(editora);
 
         }
     }

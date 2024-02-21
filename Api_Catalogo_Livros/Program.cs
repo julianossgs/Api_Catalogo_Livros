@@ -25,6 +25,13 @@ builder.Services.AddControllers().AddJsonOptions(
     options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
 );
 
+//habilitando o serviço p/ filtro de exceção global
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(ApiExceptionFilter));
+});
+
+
 //habilitando os serviços do Repository
 builder.Services.AddScoped<IAutoresRepository, AutoresRepository>();
 builder.Services.AddScoped<IEditorasRepository, EditorasRepository>();

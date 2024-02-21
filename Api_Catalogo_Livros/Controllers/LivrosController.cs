@@ -19,20 +19,11 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet("autores/editoras")]
         public async Task<ActionResult<IEnumerable<Livros>>> GetAutoresLivrosAsync()
         {
-            try
-            {
-                return await _context.Livros.Include(p => p.Autores)
-                    .Include(p => p.Editoras)
-                    .Where(c => c.LivroId <= 10)
-                    .AsNoTracking().ToListAsync();
-            }
-            catch (Exception)
-            {
 
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Ocorreu um problema!!! " +
-                   "Entre em contato com Suporte técnico (35)98898-1198");
-            }
+            return await _context.Livros.Include(p => p.Autores)
+                .Include(p => p.Editoras)
+                .Where(c => c.LivroId <= 10)
+                .AsNoTracking().ToListAsync();
 
         }
 
@@ -41,23 +32,14 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Livros>>> GetAsync()
         {
-            try
-            {
-                var livros = await _context.Livros.Take(5).AsNoTracking().ToListAsync();
 
-                if (livros is null)
-                {
-                    return NotFound("Lista não encontrada!");
-                }
-                return livros;
-            }
-            catch (Exception)
-            {
+            var livros = await _context.Livros.Take(5).AsNoTracking().ToListAsync();
 
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Ocorreu um problema!!! " +
-                   "Entre em contato com Suporte técnico (35)98898-1198");
+            if (livros is null)
+            {
+                return NotFound("Lista não encontrada!");
             }
+            return livros;
 
         }
 
@@ -66,22 +48,13 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet("{id:int}", Name = "ObterLivro")]
         public ActionResult<Livros> Get(int id)
         {
-            try
-            {
-                var livro = _context.Livros.AsNoTracking().FirstOrDefault(p => p.LivroId == id);
-                if (livro is null)
-                {
-                    return NotFound("Livro não encontrado!");
-                }
-                return livro;
-            }
-            catch (Exception)
-            {
 
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                     "Ocorreu um problema!!! " +
-                     "Entre em contato com Suporte técnico (35)98898-1198");
+            var livro = _context.Livros.AsNoTracking().FirstOrDefault(p => p.LivroId == id);
+            if (livro is null)
+            {
+                return NotFound("Livro não encontrado!");
             }
+            return livro;
 
         }
 
@@ -89,25 +62,16 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpPost]
         public ActionResult Add(Livros livro)
         {
-            try
-            {
-                if (livro is null)
-                {
-                    return BadRequest();
-                }
-                _context.Livros.Add(livro);
-                _context.SaveChanges();
 
-                return new CreatedAtRouteResult("ObterLivro",
-                    new { id = livro.LivroId }, livro);
-            }
-            catch (Exception)
+            if (livro is null)
             {
-
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Ocorreu um problema!!! " +
-                   "Entre em contato com Suporte técnico (35)98898-1198");
+                return BadRequest();
             }
+            _context.Livros.Add(livro);
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("ObterLivro",
+                new { id = livro.LivroId }, livro);
 
         }
 
@@ -115,23 +79,15 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpPut("{id:int}")]
         public ActionResult Edit(int id, Livros livro)
         {
-            try
-            {
-                if (id != livro.LivroId)
-                {
-                    return BadRequest("Livro não encontrado!");
-                }
 
-                _context.Entry(livro).State = EntityState.Modified;
-                _context.SaveChanges();
-                return Ok(livro);
-            }
-            catch (Exception)
+            if (id != livro.LivroId)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                   "Ocorreu um problema!!! " +
-                                   "Entre em contato com Suporte técnico (35)98898-1198");
+                return BadRequest("Livro não encontrado!");
             }
+
+            _context.Entry(livro).State = EntityState.Modified;
+            _context.SaveChanges();
+            return Ok(livro);
 
         }
 
@@ -139,25 +95,18 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            try
-            {
-                var livro = _context.Livros.FirstOrDefault(p => p.LivroId == id);
-                if (livro is null)
-                {
-                    return NotFound("Livro não encontrado!");
-                }
 
-                _context.Livros.Remove(livro);
-                _context.SaveChanges();
-
-                return Ok(livro);
-            }
-            catch (Exception)
+            var livro = _context.Livros.FirstOrDefault(p => p.LivroId == id);
+            if (livro is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                   "Ocorreu um problema!!! " +
-                                   "Entre em contato com Suporte técnico (35)98898-1198");
+                return NotFound("Livro não encontrado!");
             }
+
+            _context.Livros.Remove(livro);
+            _context.SaveChanges();
+
+            return Ok(livro);
+
 
         }
     }
