@@ -20,18 +20,10 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet("livros")]
         public async Task<ActionResult<IEnumerable<Autores>>> GetAutoresLivrosAsync()
         {
-            try
-            {
-                return await _context.Autores.Include(p => p.Livros)
-                           .Where(p => p.AutorId <= 10)
-                           .AsNoTracking().ToListAsync();
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Ocorreu um problema!!! " +
-                    "Entre em contato com Suporte técnico (35)98898-1198");
-            }
+
+            return await _context.Autores.Include(p => p.Livros)
+                       .Where(p => p.AutorId <= 10)
+                       .AsNoTracking().ToListAsync();
 
         }
 
@@ -40,25 +32,15 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Autores>>> GetAsync()
         {
-            try
+
+            var autores = await _context.Autores
+                .Take(10).AsNoTracking().ToListAsync();
+
+            if (autores is null)
             {
-
-                var autores = await _context.Autores
-                    .Take(10).AsNoTracking().ToListAsync();
-
-                if (autores is null)
-                {
-                    return NotFound("Lista não encontrada!");
-                }
-                return autores;
+                return NotFound("Lista não encontrada!");
             }
-            catch (Exception)
-            {
-
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    "Ocorreu um problema!!! " +
-                    "Entre em contato com Suporte técnico (35)98898-1198");
-            }
+            return autores;
 
         }
 
@@ -66,25 +48,17 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet("{id:int}", Name = "ObterAutor")]
         public async Task<ActionResult<Autores>> GetAsync(int id)
         {
-            try
-            {
-                var autor = await _context.Autores
-                    .Include(c => c.Livros)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(p => p.AutorId == id);
 
-                if (autor is null)
-                {
-                    return NotFound("Autor não encontrado!");
-                }
-                return autor;
-            }
-            catch (Exception)
+            var autor = await _context.Autores
+                .Include(c => c.Livros)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.AutorId == id);
+
+            if (autor is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Ocorreu um problema!!! " +
-                   "Entre em contato com Suporte técnico (35)98898-1198");
+                return NotFound("Autor não encontrado!");
             }
+            return autor;
 
         }
 
@@ -92,24 +66,16 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpPost]
         public ActionResult Add(Autores autor)
         {
-            try
-            {
-                if (autor is null)
-                {
-                    return BadRequest("Erro ao adicionar registro!");
-                }
-                _context.Autores.Add(autor);
-                _context.SaveChanges();
 
-                return new CreatedAtRouteResult("ObterAutor",
-                    new { id = autor.AutorId }, autor);
-            }
-            catch (Exception)
+            if (autor is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                  "Ocorreu um problema!!! " +
-                                  "Entre em contato com Suporte técnico (35)98898-1198");
+                return BadRequest("Erro ao adicionar registro!");
             }
+            _context.Autores.Add(autor);
+            _context.SaveChanges();
+
+            return new CreatedAtRouteResult("ObterAutor",
+                new { id = autor.AutorId }, autor);
 
         }
 
@@ -117,24 +83,15 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpPut("{id:int}")]
         public ActionResult Edit(int id, Autores autor)
         {
-            try
-            {
-                if (id != autor.AutorId)
-                {
-                    return BadRequest("Autor não encontrado!");
-                }
 
-                _context.Entry(autor).State = EntityState.Modified;
-                _context.SaveChanges();
-                return Ok(autor);
-            }
-            catch (Exception)
+            if (id != autor.AutorId)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                   "Ocorreu um problema!!! " +
-                   "Entre em contato com Suporte técnico (35)98898-1198");
-
+                return BadRequest("Autor não encontrado!");
             }
+
+            _context.Entry(autor).State = EntityState.Modified;
+            _context.SaveChanges();
+            return Ok(autor);
 
         }
 
@@ -142,25 +99,17 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            try
-            {
-                var autor = _context.Autores.FirstOrDefault(p => p.AutorId == id);
-                if (autor is null)
-                {
-                    return NotFound("Autor não encontrado!");
-                }
 
-                _context.Autores.Remove(autor);
-                _context.SaveChanges();
-
-                return Ok(autor);
-            }
-            catch (Exception)
+            var autor = _context.Autores.FirstOrDefault(p => p.AutorId == id);
+            if (autor is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                  "Ocorreu um problema!!! " +
-                  "Entre em contato com Suporte técnico (35)98898-1198");
+                return NotFound("Autor não encontrado!");
             }
+
+            _context.Autores.Remove(autor);
+            _context.SaveChanges();
+
+            return Ok(autor);
 
         }
     }
