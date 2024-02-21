@@ -16,31 +16,14 @@ namespace Api_Catalogo_Livros.Controllers
             _context = context;
         }
 
-        [HttpGet("livros")]
-        public async Task<ActionResult<IEnumerable<Editoras>>> GetEditorasLivrosAsync()
-        {
-            try
-            {
-                return await _context.Editoras.Include(p => p.Livros)
-                .Where(p => p.EditoraId <= 5)
-                .AsNoTracking().ToListAsync();
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                                   "Ocorreu um problema!!! " +
-                                   "Entre em contato com Suporte técnico (35)98898-1198");
-            }
-
-        }
-
         //método que retorna 1 lista 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Editoras>>> GetAsync()
         {
             try
             {
-                var editoras = await _context.Editoras.Take(5).AsNoTracking().ToListAsync();
+                var editoras = await _context.Editoras
+                    .Take(5).AsNoTracking().ToListAsync();
 
                 if (editoras is null)
                 {
