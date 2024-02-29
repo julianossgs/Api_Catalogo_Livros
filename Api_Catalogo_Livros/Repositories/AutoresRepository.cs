@@ -14,41 +14,64 @@ namespace Api_Catalogo_Livros.Repositories
             _context = context;
         }
 
-        //add
-        public void Add(Autores autores)
+        public Autores Create(Autores objet)
         {
-            _context.Autores.Add(autores);
+            if (objet is null)
+                throw new ArgumentNullException(nameof(objet));
+
+            _context.Autores.Add(objet);
             _context.SaveChanges();
+            return objet;
         }
 
-        //delete
-        public void Delete(int id)
+        public Autores Delete(int id)
         {
-            _context.Autores.Remove(Get(id));
+            var objet = _context.Autores.Find(id);
+            if (objet is null)
+                throw new ArgumentNullException(nameof(objet));
+
+            _context.Autores.Remove(objet);
             _context.SaveChanges();
+            return objet;
         }
 
-        //Get por id
-        public Autores Get(int id)
+        public Autores GetById(int id)
+        {
+            return _context.Autores.FirstOrDefault(c => c.AutorId == id);
+        }
+
+        public IEnumerable<Autores> GetAutores()
         {
             return _context.Autores
-                .Include(c => c.Livros)
-                .FirstOrDefault();
+                   .AsNoTracking()
+                   .OrderBy(c => c.Nome)
+                   .ToList();
         }
 
-        //Lista
-        public List<Autores> GetAutoresLivros()
+        public Autores Update(Autores objet)
         {
-            return _context.Autores
-                .Include(c => c.Livros)
-                .OrderBy(c => c.AutorId).ToList();
-        }
+            if (objet is null)
+                throw new ArgumentNullException(nameof(objet));
 
-        //update
-        public void Update(Autores autores)
-        {
-            _context.Remove(autores);
+            _context.Entry(objet).State = EntityState.Modified;
             _context.SaveChanges();
+            return objet;
+        }
+
+        public IEnumerable<Autores> GetAutoresLivros()
+        {
+            return _context.Autores.Include(p => p.Livros)
+                      .Where(p => p.AutorId <= 10)
+                      .AsNoTracking()
+                      .ToList();
+        }
+
+        public IEnumerable<Livros> GetLivrosAutores()
+        {
+            return _context.Livros.Include(p => p.Autores)
+                       .Where(p => p.LivroId <= 10)
+                       .AsNoTracking()
+                       .ToList();
         }
     }
 }

@@ -4,10 +4,12 @@ namespace Api_Catalogo_Livros.Repositories.Interfaces
 {
     public interface ILivrosRepository
     {
-        List<Livros> GetLivros();
+        IEnumerable<Livros> GetLivros();
+        IEnumerable<Livros> GetLivrosPrecos();
+        IEnumerable<Livros> GetLivrosEditoras();
         Livros Get(int id);
-        void Add(Livros livros);
-        void Update(Livros livros);
-        void Delete(int id);
+        Livros Create(Livros livros);
+        Livros Update(Livros livros);
+        Livros Delete(int id);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Api_Catalogo_Livros.Context;
 using Api_Catalogo_Livros.Models;
+using Api_Catalogo_Livros.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api_Catalogo_Livros.Controllers
 {
@@ -12,26 +12,27 @@ namespace Api_Catalogo_Livros.Controllers
     public class AutoresController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IAutoresRepository _repository;
 
-        public AutoresController(AppDbContext context)
+        public AutoresController(AppDbContext context, IAutoresRepository repository)
         {
             _context = context;
+            _repository = repository;
         }
 
-        //Método que retorna Autores e seus livros
+
         /// <summary>
-        /// Obter 1 lista de autores e seus livros
+        /// Obtem 1 lista de livros e seus autores
         /// </summary>
         /// <returns></returns>
-        [HttpGet("livros")]
+        [HttpGet("autoreslivros")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Autores>>> GetAutoresLivrosAsync()
+        public ActionResult<IEnumerable<Livros>> GetLivrosAutores()
         {
 
-            return await _context.Autores.Include(p => p.Livros)
-                       .Where(p => p.AutorId <= 10)
-                       .AsNoTracking().ToListAsync();
+            var objet = _repository.GetLivrosAutores();
+            return Ok(objet);
 
         }
 
@@ -45,17 +46,10 @@ namespace Api_Catalogo_Livros.Controllers
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<Autores>>> GetAsync()
+        public ActionResult<IEnumerable<Autores>> Get()
         {
-
-            var autores = await _context.Autores
-                .Take(10).AsNoTracking().ToListAsync();
-
-            if (autores is null)
-            {
-                return NotFound("Lista não encontrada!");
-            }
-            return Ok(autores);
+            var objet = _repository.GetAutores();
+            return Ok(objet);
 
         }
 
@@ -68,19 +62,17 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet("{id:int}", Name = "ObterAutor")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Autores>> GetAsync(int id)
+        public ActionResult<Autores> GetById(int id)
         {
 
-            var autor = await _context.Autores
-                .Include(c => c.Livros)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.AutorId == id);
+            var objet = _repository.GetById(id);
 
-            if (autor is null)
+            if (objet is null)
             {
-                return NotFound("Autor não encontrado!");
+                return NotFound($"O Registro com ID: {id} não foi encontrado");
             }
-            return Ok(autor);
+
+            return Ok(objet);
 
         }
 
@@ -88,7 +80,7 @@ namespace Api_Catalogo_Livros.Controllers
         /// <summary>
         /// Adiciona 1 novo registro
         /// </summary>
-        /// <param name="autor"></param>
+        /// <param name="objet"></param>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -96,19 +88,18 @@ namespace Api_Catalogo_Livros.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public ActionResult Add(Autores autor)
+        public ActionResult Post(Autores objet)
         {
 
-            if (autor is null)
+            if (objet is null)
             {
-                return BadRequest("Erro ao adicionar registro!");
+                return BadRequest("Dados inválidos!");
             }
-            _context.Autores.Add(autor);
-            _context.SaveChanges();
+
+            var objetNovo = _repository.Create(objet);
 
             return new CreatedAtRouteResult("ObterAutor",
-                new { id = autor.AutorId }, autor);
-
+                new { id = objetNovo.AutorId }, objetNovo);
         }
 
         //update
@@ -116,24 +107,24 @@ namespace Api_Catalogo_Livros.Controllers
         /// Atualiza 1 novo registro
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="autor"></param>
+        /// <param name="objet"></param>
         /// <returns></returns>
         [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public ActionResult Edit(int id, Autores autor)
+        public ActionResult Put(int id, Autores objet)
         {
 
-            if (id != autor.AutorId)
+            if (id != objet.AutorId)
             {
-                return BadRequest("Autor não encontrado!");
+                return BadRequest("Dados inválidos!");
             }
 
-            _context.Entry(autor).State = EntityState.Modified;
-            _context.SaveChanges();
-            return Ok(autor);
+            _repository.Update(objet);
+
+            return Ok(objet);
 
         }
 
@@ -149,16 +140,15 @@ namespace Api_Catalogo_Livros.Controllers
         public ActionResult Delete(int id)
         {
 
-            var autor = _context.Autores.FirstOrDefault(p => p.AutorId == id);
-            if (autor is null)
+            var objet = _repository.GetById(id);
+
+            if (objet is null)
             {
-                return NotFound("Autor não encontrado!");
+                return NotFound($"O Registro com ID: {id} não foi encontrado");
             }
 
-            _context.Autores.Remove(autor);
-            _context.SaveChanges();
-
-            return Ok(autor);
+            var objetExcluido = _repository.Delete(id);
+            return Ok(objetExcluido);
 
         }
     }
