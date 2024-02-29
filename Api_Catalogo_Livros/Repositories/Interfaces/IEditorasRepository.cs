@@ -4,10 +4,11 @@ namespace Api_Catalogo_Livros.Repositories.Interfaces
 {
     public interface IEditorasRepository
     {
-        List<Editoras> GetEditoras();
+        IEnumerable<Editoras> GetEditoras();
+        IEnumerable<Editoras> GetEditorasNome();
         Editoras Get(int id);
-        void Add(Editoras editoras);
-        void Update(Editoras editoras);
-        void Delete(int id);
+        Editoras Create(Editoras objet);
+        Editoras Update(Editoras objet);
+        Editoras Delete(int id);
     }
 }

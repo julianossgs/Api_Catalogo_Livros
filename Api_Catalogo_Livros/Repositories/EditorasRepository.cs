@@ -1,6 +1,7 @@
 ﻿using Api_Catalogo_Livros.Context;
 using Api_Catalogo_Livros.Models;
 using Api_Catalogo_Livros.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api_Catalogo_Livros.Repositories
 {
@@ -13,32 +14,55 @@ namespace Api_Catalogo_Livros.Repositories
             _context = context;
         }
 
-        public void Add(Editoras editoras)
+        public Editoras Create(Editoras objet)
         {
-            _context.Editoras.Add(editoras);
+            if (objet is null)
+                throw new ArgumentNullException(nameof(objet));
+
+            _context.Editoras.Add(objet);
             _context.SaveChanges();
+            return objet;
         }
 
-        public void Delete(int id)
+        public Editoras Delete(int id)
         {
-            _context.Editoras.Remove(Get(id));
+            var objet = _context.Editoras.Find(id);
+            if (objet is null)
+                throw new ArgumentNullException(nameof(objet));
+
+            _context.Editoras.Remove(objet);
             _context.SaveChanges();
+            return objet;
         }
 
         public Editoras Get(int id)
         {
-            return _context.Editoras.Find(id);
+            return _context.Editoras.FirstOrDefault(c => c.EditoraId == id);
         }
 
-        public List<Editoras> GetEditoras()
+        public IEnumerable<Editoras> GetEditoras()
         {
-            return _context.Editoras.OrderBy(c => c.EditoraId).ToList();
+            return _context.Editoras
+                   .AsNoTracking()
+                   .ToList();
         }
 
-        public void Update(Editoras editoras)
+        public IEnumerable<Editoras> GetEditorasNome()
         {
-            _context.Editoras.Update(editoras);
+            return _context.Editoras
+                    .AsNoTracking()
+                    .OrderBy(c => c.Nome)
+                    .ToList();
+        }
+
+        public Editoras Update(Editoras objet)
+        {
+            if (objet is null)
+                throw new ArgumentNullException(nameof(objet));
+
+            _context.Entry(objet).State = EntityState.Modified;
             _context.SaveChanges();
+            return objet;
         }
     }
 }

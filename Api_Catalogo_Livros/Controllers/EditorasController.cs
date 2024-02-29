@@ -1,7 +1,7 @@
 ﻿using Api_Catalogo_Livros.Context;
 using Api_Catalogo_Livros.Models;
+using Api_Catalogo_Livros.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api_Catalogo_Livros.Controllers
 {
@@ -13,10 +13,12 @@ namespace Api_Catalogo_Livros.Controllers
     public class EditorasController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IEditorasRepository _repository;
 
-        public EditorasController(AppDbContext context)
+        public EditorasController(AppDbContext context, IEditorasRepository repository)
         {
             _context = context;
+            _repository = repository;
         }
 
         //método que retorna 1 lista 
@@ -28,18 +30,24 @@ namespace Api_Catalogo_Livros.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<IEnumerable<Editoras>>> GetAsync()
+        public ActionResult<IEnumerable<Editoras>> Get()
         {
 
-            var editoras = await _context.Editoras
-                .Take(5).AsNoTracking().ToListAsync();
+            var objet = _repository.GetEditoras();
+            return Ok(objet);
 
-            if (editoras is null)
-            {
-                return NotFound("Lista não encontrada!");
-            }
-            return Ok(editoras);
+        }
 
+
+        /// <summary>
+        /// Obtem 1 lista de editoras em ordem alfabética
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("editoranome")]
+        public ActionResult<IEnumerable<Editoras>> GetEditoraNome()
+        {
+            var objet = _repository.GetEditorasNome();
+            return Ok(objet);
         }
 
 
@@ -52,24 +60,24 @@ namespace Api_Catalogo_Livros.Controllers
         [HttpGet("{id:int}", Name = "ObterEditora")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Editoras>> GetAsync(int id)
+        public ActionResult<Editoras> Get(int id)
         {
 
-            var editora = await _context.Editoras.AsNoTracking()
-                .FirstOrDefaultAsync(p => p.EditoraId == id);
-            if (editora is null)
-            {
-                return NotFound("Editora não encontrada!");
-            }
-            return Ok(editora);
+            var objet = _repository.Get(id);
 
+            if (objet is null)
+            {
+                return NotFound($"O Registro com ID: {id} não foi encontrado");
+            }
+
+            return Ok(objet);
         }
 
         //add 
         /// <summary>
         /// Adiciona 1 novo registro
         /// </summary>
-        /// <param name="editora"></param>
+        /// <param name="objet"></param>
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -77,18 +85,18 @@ namespace Api_Catalogo_Livros.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public ActionResult Add(Editoras editora)
+        public ActionResult Post(Editoras objet)
         {
 
-            if (editora is null)
+            if (objet is null)
             {
-                return BadRequest();
+                return BadRequest("Dados inválidos!");
             }
-            _context.Editoras.Add(editora);
-            _context.SaveChanges();
+
+            var objetNovo = _repository.Create(objet);
 
             return new CreatedAtRouteResult("ObterEditora",
-                new { id = editora.EditoraId }, editora);
+                new { id = objetNovo.EditoraId }, objetNovo);
 
         }
 
@@ -104,17 +112,17 @@ namespace Api_Catalogo_Livros.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         [ProducesDefaultResponseType]
-        public ActionResult Edit(int id, Editoras editora)
+        public ActionResult Put(int id, Editoras objet)
         {
 
-            if (id != editora.EditoraId)
+            if (id != objet.EditoraId)
             {
-                return BadRequest("Editora não encontrada!");
+                return BadRequest("Dados inválidos!");
             }
 
-            _context.Entry(editora).State = EntityState.Modified;
-            _context.SaveChanges();
-            return Ok(editora);
+            _repository.Update(objet);
+
+            return Ok(objet);
 
         }
 
@@ -130,16 +138,15 @@ namespace Api_Catalogo_Livros.Controllers
         public ActionResult Delete(int id)
         {
 
-            var editora = _context.Editoras.FirstOrDefault(p => p.EditoraId == id);
-            if (editora is null)
+            var objet = _repository.Get(id);
+
+            if (objet is null)
             {
-                return NotFound("Editora não encontrada!");
+                return NotFound($"O Registro com ID: {id} não foi encontrado");
             }
 
-            _context.Editoras.Remove(editora);
-            _context.SaveChanges();
-
-            return Ok(editora);
+            var objetExcluido = _repository.Delete(id);
+            return Ok(objetExcluido);
 
         }
     }

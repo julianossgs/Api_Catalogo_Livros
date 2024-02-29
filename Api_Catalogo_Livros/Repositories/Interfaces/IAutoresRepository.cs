@@ -4,14 +4,12 @@ namespace Api_Catalogo_Livros.Repositories.Interfaces
 {
     public interface IAutoresRepository
     {
-        List<Autores> GetAutoresLivros();
-
-        Autores Get(int id);
-
-        void Add(Autores autores);
-
-        void Update(Autores autores);
-
-        void Delete(int id);
+        IEnumerable<Autores> GetAutores();
+        IEnumerable<Autores> GetAutoresLivros();
+        IEnumerable<Livros> GetLivrosAutores();
+        Autores GetById(int id);
+        Autores Create(Autores objet);
+        Autores Update(Autores objet);
+        Autores Delete(int id);
     }
 }
